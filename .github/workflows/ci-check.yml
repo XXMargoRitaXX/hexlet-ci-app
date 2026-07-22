@@ -1,14 +1,27 @@
 name: ci-check
-on: push
+
+on: 
+  - push
+  - pull_request
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [26.x]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm' # ускорение повторных сборок
       - name: install dependencies and run build
         run: make setup
       - name: run linter
         run: make lint
       - name: run tests
         run: make test
+      # Вывод строки 'Hello from Hexlet!' 
+      - uses: hexlet-components/hello-from-hexlet-action@release
